@@ -1,4 +1,4 @@
-# 🛠️ DevOps Assignment – End-to-End AWS Deployment
+# 🛠️ End-to-End full-stack app AWS Deployment
 
 This project demonstrates DevOps best practices by building, containerizing, testing, deploying, and monitoring a full-stack web application (Python backend + Next.js frontend) on AWS using GitHub Actions, Docker, Terraform, and other DevOps tools.
 
