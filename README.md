@@ -38,7 +38,7 @@ README.md
 - IAM policies enforce least privilege
 - Secrets injected at runtime using Secrets Manager
 
-![Architecture Diagram](./assets/architecture.png)
+![Architecture Diagram](./assets/image.png)
 
 ---
 
