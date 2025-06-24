@@ -12,7 +12,8 @@ RUN npm install
 
 # Copy all source files
 COPY . .
-
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 # Build the Next.js app
 RUN npm run build
 
@@ -30,7 +31,7 @@ RUN npm install --omit=dev
 COPY --from=builder /app/.next .next
 # COPY --from=builder /app/public public
 # COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/.env.local .env.local
+#COPY --from=builder /app/.env.local .env.local
 
 # Expose the port Next.js runs on
 EXPOSE 3000
