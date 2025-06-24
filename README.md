@@ -1,6 +1,7 @@
-# 🛠️ End-to-End full-stack app AWS Deployment
 
-This project demonstrates DevOps best practices by building, containerizing, testing, deploying, and monitoring a full-stack web application (Python backend + Next.js frontend) on AWS using GitHub Actions, Docker, Terraform, and other DevOps tools.
+# 🛠️ End-to-End Full-Stack App Deployment on AWS
+
+This project demonstrates DevOps best practices by building, containerizing, testing, deploying, and monitoring a full-stack web application (FastAPI backend + Next.js frontend) on AWS using GitHub Actions, Docker, Terraform, and other DevOps tools.
 
 ---
 
@@ -24,6 +25,7 @@ This project demonstrates DevOps best practices by building, containerizing, tes
 /frontend/      # Next.js web frontend
 /.github/       # GitHub Actions workflows
 /terraform/     # IaC configs for ECS, VPC, ALB, IAM, etc.
+/assets/        # Architecture diagrams, CloudWatch screenshots, etc.
 README.md
 ```
 
@@ -57,8 +59,8 @@ README.md
 ### 1️⃣ Clone the Repo
 
 ```bash
-git clone https://github.com/your-username/devops-assignment.git
-cd devops-assignment
+git clone https://github.com/vijaypvk/devops-assignment-aws-ecs.git
+cd devops-assignment-aws-ecs
 ```
 
 ---
@@ -132,10 +134,11 @@ docker push YOUR_ECR_URL/backend:latest
 - On **push to `develop`**:
   - Lint & test backend and frontend
   - Build Docker images & push to ECR
+
 - On **merge to `main`**:
   - Trigger Terraform deployment to AWS
 
-Check the `.github/workflows/` folder for YAML files.
+Check the `.github/workflows/` folder for YAML workflows.
 
 ---
 
@@ -148,11 +151,11 @@ terraform plan
 terraform apply
 ```
 
-Creates:
-- VPC, subnets, ALB, ECS cluster
-- ECS services (Fargate) for backend & frontend
+Provisions:
+
+- VPC, subnets, ALB, ECS Fargate services
 - Secrets in AWS Secrets Manager
-- IAM roles with least-privilege
+- IAM roles with least-privilege access
 
 ---
 
@@ -162,23 +165,23 @@ Creates:
   - CPU/Memory usage
   - Request count
 - **Alarm**: Email alert if CPU > 70% for 5 mins
-- Dashboard screenshots in `assets/cloudwatch/`
+- Dashboard screenshots: `assets/cloudwatch/`
 
 ---
 
 ## 🔐 Security
 
-- Secrets are stored in **AWS Secrets Manager**
-- ECS services fetch secrets securely at runtime
-- IAM roles are tightly scoped to required actions only
-- Security Groups restrict inbound access (only via ALB)
+- Secrets stored in **AWS Secrets Manager**
+- ECS containers securely retrieve secrets at runtime
+- IAM roles scoped with **least privilege**
+- Security groups allow only required inbound traffic
 
 ---
 
 ## 🌐 Load Balancing Test
 
-- ALB routes traffic to 2+ ECS tasks
-- Verified zero-downtime by stopping one container — traffic continues to flow
+- ALB routes traffic across 2+ ECS tasks
+- Verified **zero-downtime** by stopping one container; traffic continues to flow
 
 ---
 
@@ -186,16 +189,16 @@ Creates:
 
 [![Watch the Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
 
-> Covers: Architecture, Git workflow, Dockerization, CI/CD, Terraform, Monitoring, Security, and Load Balancer failover.
+> 🎥 _Covers: architecture, Git workflow, Dockerization, CI/CD, Terraform, monitoring, security, and load balancing test._
 
 ---
 
 ## 📸 Hands-On Evidence
 
 - ✅ Terraform apply logs
-- ✅ GitHub Actions deployment logs
+- ✅ GitHub Actions logs
 - ✅ CloudWatch dashboard screenshots
-- ✅ Secrets Manager integration demo
+- ✅ Secret retrieval demonstration
 - ✅ Load balancer failover validation
 
 All in the `evidence/` folder.
@@ -208,10 +211,10 @@ All in the `evidence/` folder.
 - [x] Clear README with setup & architecture
 - [x] Tests run locally and in CI
 - [x] Docker images pushed to ECR with Git SHA tags
-- [x] Terraform provisions all infra correctly
-- [x] CI/CD deploys on `main` merge
+- [x] Terraform provisions infrastructure correctly
+- [x] CI/CD deploys automatically from `main`
 - [x] CloudWatch dashboards + alerts configured
-- [x] IAM follows least privilege
+- [x] IAM follows least-privilege principle
 - [x] Demo video link included
 
 ---
@@ -219,5 +222,9 @@ All in the `evidence/` folder.
 ## 🙌 Author
 
 **Vijay Krishnaa P**  
-Cloud | DevOps | AI Enthusiast  
-[LinkedIn](https://www.linkedin.com/in/your-profile) | [GitHub](https://github.com/your-username)
+📘 B.Tech CSE | Cloud | DevOps | AI Enthusiast  
+🔗 [LinkedIn](https://www.linkedin.com/in/vijaykrishnaa) | [GitHub](https://github.com/vijaypvk)
+
+---
+
+> _"Build once. Deploy everywhere. Automate everything."_
