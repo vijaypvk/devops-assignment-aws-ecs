@@ -1,4 +1,3 @@
-
 # 🛠️ End-to-End Full-Stack App Deployment on AWS
 
 This project demonstrates DevOps best practices by building, containerizing, testing, deploying, and monitoring a full-stack web application (FastAPI backend + Next.js frontend) on AWS using GitHub Actions, Docker, Terraform, and other DevOps tools.
@@ -7,14 +6,14 @@ This project demonstrates DevOps best practices by building, containerizing, tes
 
 ## 📦 Tech Stack
 
-- **Backend**: Python (FastAPI)
-- **Frontend**: Next.js (React)
-- **CI/CD**: GitHub Actions
-- **Containers**: Docker
-- **Infrastructure as Code**: Terraform (AWS ECS + Fargate, ALB)
-- **Monitoring**: AWS CloudWatch
-- **Secrets & Security**: AWS Secrets Manager, IAM
-- **Load Balancing**: AWS Application Load Balancer
+* **Backend**: Python (FastAPI)
+* **Frontend**: Next.js (React)
+* **CI/CD**: GitHub Actions
+* **Containers**: Docker
+* **Infrastructure as Code**: Terraform (EC2 + Docker Compose)
+* **Monitoring**: AWS CloudWatch (Future Improvement)
+* **Secrets & Security**: SSH Key Pair, IAM
+* **Load Balancing**: NA (Handled by EC2 instance directly)
 
 ---
 
@@ -24,7 +23,7 @@ This project demonstrates DevOps best practices by building, containerizing, tes
 /backend/       # Python FastAPI REST API
 /frontend/      # Next.js web frontend
 /.github/       # GitHub Actions workflows
-/terraform/     # IaC configs for ECS, VPC, ALB, IAM, etc.
+/terraform/     # IaC configs for EC2, VPC, SG, IAM, etc.
 /assets/        # Architecture diagrams, CloudWatch screenshots, etc.
 README.md
 ```
@@ -33,26 +32,23 @@ README.md
 
 ## 🚀 Architecture Overview
 
-- Frontend & backend containerized using Docker
-- CI/CD pipeline tests and pushes images to AWS ECR
-- Terraform provisions ECS Fargate services behind an ALB
-- CloudWatch handles monitoring with alarms & dashboards
-- IAM policies enforce least privilege
-- Secrets injected at runtime using Secrets Manager
-
+* Frontend & backend containerized using Docker
+* GitHub repo contains Dockerfiles and docker-compose for orchestration
+* Terraform provisions an EC2 instance and auto-installs Docker, Compose, and Git
+* EC2 instance clones the GitHub repo and runs `docker-compose up`
+* Supports GitOps-style self-hosted deployment model
 ![Architecture Diagram](./assets/image.png)
-
 ---
 
 ## 📖 Setup Instructions
 
 ### 🔧 Prerequisites
 
-- AWS Account (Free Tier or higher)
-- GitHub repository
-- Docker & Docker Compose
-- Terraform v1.4+
-- AWS CLI (configured with access keys)
+* AWS Account (Free Tier or higher)
+* GitHub repository
+* Docker & Docker Compose (for local test)
+* Terraform v1.4+
+* AWS CLI (configured with access keys)
 
 ---
 
@@ -119,30 +115,7 @@ docker run -p 3000:3000 frontend-app
 
 ---
 
-### 5️⃣ AWS ECR Push (Manually or via CI/CD)
-
-```bash
-aws ecr get-login-password --region YOUR_REGION | docker login --username AWS --password-stdin YOUR_ECR_URL
-docker tag backend-service:latest YOUR_ECR_URL/backend:latest
-docker push YOUR_ECR_URL/backend:latest
-```
-
----
-
-## ⚙️ CI/CD Workflow (GitHub Actions)
-
-- On **push to `develop`**:
-  - Lint & test backend and frontend
-  - Build Docker images & push to ECR
-
-- On **merge to `main`**:
-  - Trigger Terraform deployment to AWS
-
-Check the `.github/workflows/` folder for YAML workflows.
-
----
-
-## 🌍 Terraform Deployment
+### 5️⃣ EC2 Deployment via Terraform
 
 ```bash
 cd terraform
@@ -153,78 +126,72 @@ terraform apply
 
 Provisions:
 
-- VPC, subnets, ALB, ECS Fargate services
-- Secrets in AWS Secrets Manager
-- IAM roles with least-privilege access
+* EC2 instance (Ubuntu 22.04)
+* Installs Docker, Compose, Git
+* Clones the GitHub repo
+* Runs `docker-compose up -d`
+
+> ✅ Frontend available at `http://<public-ip>:3000`
+> ✅ Backend available at `http://<public-ip>:8000`
 
 ---
 
-## 📊 Monitoring & Alerts
+## ⚙️ CI/CD Workflow (GitHub Actions)
 
-- **CloudWatch Dashboard** includes:
-  - CPU/Memory usage
-  - Request count
-- **Alarm**: Email alert if CPU > 70% for 5 mins
-- Dashboard screenshots: `assets/cloudwatch/`
+> *Suggested future enhancement:*
+
+* On push to `main` or `develop`, SSH into EC2
+* Run `git pull && docker-compose down && docker-compose up -d`
+* Securely use EC2 IP and SSH key from GitHub Secrets
+
+---
+
+## 📊 Monitoring & Alerts (Planned)
+
+* Add **CloudWatch Agent** on EC2 to monitor:
+
+  * CPU/Memory
+  * Disk usage
+* Configure alarms to trigger via SNS
+* View logs in `/var/lib/docker/containers/...` or bind to host
 
 ---
 
 ## 🔐 Security
 
-- Secrets stored in **AWS Secrets Manager**
-- ECS containers securely retrieve secrets at runtime
-- IAM roles scoped with **least privilege**
-- Security groups allow only required inbound traffic
+* SSH access restricted via **Key Pair**
+* **Security Groups** allow only necessary ports: 22, 3000, 8000
+* Use **.env or AWS SSM** for managing secrets (recommended)
 
 ---
 
-## 🌐 Load Balancing Test
+## 📸 Evidence (Manual Validation)
 
-- ALB routes traffic across 2+ ECS tasks
-- Verified **zero-downtime** by stopping one container; traffic continues to flow
-
----
-
-## 🎬 Demo Video
-
-[![Watch the Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
-
-> 🎥 _Covers: architecture, Git workflow, Dockerization, CI/CD, Terraform, monitoring, security, and load balancing test._
-
----
-
-## 📸 Hands-On Evidence
-
-- ✅ Terraform apply logs
-- ✅ GitHub Actions logs
-- ✅ CloudWatch dashboard screenshots
-- ✅ Secret retrieval demonstration
-- ✅ Load balancer failover validation
-
-All in the `evidence/` folder.
+* ✅ Terraform apply logs
+* ✅ EC2 instance public IP
+* ✅ Live frontend/backend accessibility
+* ✅ GitHub repo auto-cloned
+* ✅ Docker containers up on `ps`
 
 ---
 
 ## ✅ Submission Checklist
 
-- [x] Monorepo with `/backend` and `/frontend`
-- [x] Clear README with setup & architecture
-- [x] Tests run locally and in CI
-- [x] Docker images pushed to ECR with Git SHA tags
-- [x] Terraform provisions infrastructure correctly
-- [x] CI/CD deploys automatically from `main`
-- [x] CloudWatch dashboards + alerts configured
-- [x] IAM follows least-privilege principle
-- [x] Demo video link included
+* [x] Dockerized backend and frontend
+* [x] GitHub-hosted codebase with Docker Compose
+* [x] Terraform provisions EC2 infra
+* [x] Containers auto-started from Git clone
+* [x] Security groups and SSH access configured
+* [x] Readme includes complete steps
 
 ---
 
 ## 🙌 Author
 
-**Vijay Krishnaa P**  
-📘 B.Tech CSE | Cloud | DevOps | AI Enthusiast  
-🔗 [LinkedIn](https://www.linkedin.com/in/vijaykrishnaa) | [GitHub](https://github.com/vijaypvk)
+**Vijay Krishnaa P**
+📘 B.Tech CSE | Cloud | DevOps | AI Enthusiast
+🔗 [LinkedIn](https://www.linkedin.com/in/vijaykrishnaa) • [GitHub](https://github.com/vijaypvk)
 
 ---
 
-> _"Build once. Deploy everywhere. Automate everything."_
+> *"Build once. Deploy anywhere. Automate everything."*
